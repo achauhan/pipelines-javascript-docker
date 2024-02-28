@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: achauhanpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: achauhanpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: achauhanpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: achauhanpipelinesjavascriptdocker 
+          image: acacr.azurecr.io/achauhanpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080
