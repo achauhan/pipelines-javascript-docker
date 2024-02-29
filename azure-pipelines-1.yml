@@ -31,18 +31,20 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+    - script: |
+        # Build Docker image
+        docker build -t mywebapp:$(Build.BuildId) .
+      displayName: 'Build Docker image'
 
-    - upload: manifests
-      artifact: manifests
+    - task: Docker@2
+      inputs:
+        command: 'login'
+
+    - script: |
+        # Push Docker image to Azure Container Registry
+        docker tag mywebapp:$(Build.BuildId) acacr.azurecr.io/mywebapp:$(Build.BuildId)
+        docker push acacr.azurecr.io/mywebapp:$(Build.BuildId)
+      displayName: 'Push Docker image to Azure Container Registry'
 
 - stage: Deploy
   displayName: Deploy stage
@@ -63,5 +65,7 @@ stages:
               azureSubscription: 'azure-resource-connection' # Replace with your Azure subscription name
               appType: 'webAppLinux'
               appName: 'node-webapp-ac' # Replace with your Web App name
-              deploymentMethod: auto
+              package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              deploymentMethod: 'auto'
+
 
