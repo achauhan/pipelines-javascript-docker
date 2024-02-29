@@ -64,4 +64,5 @@ stages:
               appType: 'webAppLinux'
               appName: 'node-webapp-ac' # Replace with your Web App name
               package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              deploymentMethod: auto
 
