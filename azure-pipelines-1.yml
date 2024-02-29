@@ -9,13 +9,14 @@ trigger:
 variables:
 
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '76f3418c-e880-41a8-8209-87e94a13a507'
+  # azureSubscription: '76f3418c-e880-41a8-8209-87e94a13a507'
+  azureSubscription: 'azure-resource-connection'
 
   # Web app name
   webAppName: 'node-webapp-ac'
 
   # Environment name
-  environmentName: 'production'
+  environmentName: 'test'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
