@@ -1,25 +1,26 @@
-# Node.js React Web App to Linux on Azure
-# Build a Node.js React app and deploy it to Azure as a Linux web app.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
 - main
 
+resources:
+- repo: self
+
 variables:
 
-  # Azure Resource Manager connection created during pipeline creation
-  # azureSubscription: '76f3418c-e880-41a8-8209-87e94a13a507'
-  azureSubscription: 'azure-resource-connection'
-
-  # Web app name
-  webAppName: 'node-webapp-ac'
-
-  # Environment name
-  environmentName: 'test'
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'b86c0918-8584-464e-84c3-eba6b2a1aad4'
+  imageRepository: 'achauhanpipelinesjavascriptdocker'
+  containerRegistry: 'acacr.azurecr.io'
+  dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
+  imagePullSecret: 'acacrf011-auth'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
+
 
 stages:
 - stage: Build
@@ -29,44 +30,38 @@ stages:
     displayName: Build
     pool:
       vmImage: $(vmImageName)
-
     steps:
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
+    - task: Docker@2
+      displayName: Build and push an image to container registry
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
 
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      artifact: drop
+    - upload: manifests
+      artifact: manifests
 
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
-  condition: succeeded()
+
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: $(environmentName)
     pool:
       vmImage: $(vmImageName)
+    environment: 'achauhanpipelinesjavascriptdocker.default'
     strategy:
       runOnce:
         deploy:
           steps:
-          - task: AzureRmWebAppDeployment@4
-            displayName: 'Azure App Service Deploy: '
+          - task: AzureWebApp@1
             inputs:
-              azureSubscription: $(azureSubscription)
-              appType: webAppLinux
-              WebAppName: $(webAppName)
-              packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-              RuntimeStack: 'NODE|10.10'
-              StartupCommand: 'npm run start'
-              ScriptType: 'Inline Script'
-              InlineScript: |
-                npm install
-                npm run build --if-present
+              azureSubscription: 'azure-resource-connection' # Replace with your Azure subscription name
+              appType: 'webAppLinux'
+              appName: 'node-webapp-ac' # Replace with your Web App name
+              package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+
