@@ -12,13 +12,13 @@ variables:
   azureSubscription: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
 
   # Web app name
-  webAppName: 'node-webapp-ac'
+  webAppName: 'node-webapp-ac2'
 
   # Environment name
-  environmentName: 'node-webapp-ac'
+  environmentName: 'node-webapp-ac2'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  vmImageName: 'windows-latest'
 
 stages:
 - stage: Build
