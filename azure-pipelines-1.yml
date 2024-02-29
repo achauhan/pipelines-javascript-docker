@@ -63,6 +63,5 @@ stages:
               azureSubscription: 'azure-resource-connection' # Replace with your Azure subscription name
               appType: 'webAppLinux'
               appName: 'node-webapp-ac' # Replace with your Web App name
-              package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
               deploymentMethod: auto
 
