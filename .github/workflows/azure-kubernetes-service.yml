@@ -39,7 +39,7 @@ env:
   CONTAINER_NAME: "nodeapp"
   RESOURCE_GROUP: "myapp-rg"
   CLUSTER_NAME: "myapp"
-  DEPLOYMENT_MANIFEST_PATH: "manifests/*.yml"
+  DEPLOYMENT_MANIFEST_PATH: "manifests/deployment.yml"
 
 jobs:
   buildImage:
