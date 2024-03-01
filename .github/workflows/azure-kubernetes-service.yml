@@ -36,10 +36,10 @@ on:
 
 env:
   AZURE_CONTAINER_REGISTRY: "acacr"
-  CONTAINER_NAME: "nodeapp"
+  CONTAINER_NAME: "achauhanpipelinesjavascriptdocker"
   RESOURCE_GROUP: "myapp-rg"
   CLUSTER_NAME: "myapp"
-  DEPLOYMENT_MANIFEST_PATH: "manifests/*.yml"
+  DEPLOYMENT_MANIFEST_PATH: "manifests"
 
 jobs:
   buildImage:
