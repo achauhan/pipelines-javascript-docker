@@ -17,3 +17,6 @@ spec:
           image: acacr.azurecr.io/achauhanpipelinesjavascriptdocker
           ports:
           - containerPort: 8080
+          imagePullSecrets:
+          - name: acacrf011-auth
+In 
