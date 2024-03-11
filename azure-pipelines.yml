@@ -19,7 +19,7 @@ variables:
   imagePullSecret: 'acacrf011-auth'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  vmImageName: 'example-vm'
 
 
 stages:
