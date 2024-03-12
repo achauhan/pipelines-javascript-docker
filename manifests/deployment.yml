@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: achauhanpipelinesjavascriptdocker 
-          image: acacr.azurecr.io/achauhanpipelinesjavascriptdocker
+          image: acacr.azurecr.io/achauhanpipelinesjavascriptdocker:15
           ports:
           - containerPort: 8080
       imagePullSecrets:
