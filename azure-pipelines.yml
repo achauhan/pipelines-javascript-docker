@@ -8,6 +8,11 @@ trigger:
 resources:
 - repo: self
 
+pool:
+  name: Default
+  demands: 
+    os -equals linux
+
 variables:
 
   # Container registry service connection established during pipeline creation
@@ -19,7 +24,7 @@ variables:
   imagePullSecret: 'acacrf011-auth'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  vmImageName: 'example-vm'
 
 
 stages:
@@ -28,8 +33,6 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-    pool:
-      vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -51,8 +54,6 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    pool:
-      vmImage: $(vmImageName)
     environment: 'achauhanpipelinesjavascriptdocker.default'
     strategy:
       runOnce:
