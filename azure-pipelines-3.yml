@@ -1,0 +1,87 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+- name: environment
+  displayName: 'Environment'
+  type: string
+  default: 'dev'
+  values:
+  - dev
+  - test
+  - prod
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'b86c0918-8584-464e-84c3-eba6b2a1aad4'
+  imageRepository: 'nodeapp'
+  containerRegistry: 'acacr.azurecr.io'
+  dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
+  imagePullSecret: 'acacrf011-auth'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+- stage: Unit test
+  displayName: Unit test
+  script: echo unit test
+- stage: code scan
+  displayName: code scan
+  script: echo code scan
+- stage: security 
+  displayName: security
+  script: echo security
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'nodeapp.default'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: HelmDeploy@0
+            inputs:
+              azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
+              azureResourceGroupForACR: 'myapp-rg'
+              azureContainerRegistry: ${{containerRegistry}}
+              command: install
+              chartPath: nodeapp
+              kubernetesCluster: myapp
+              displayName: 'Deploy'
+              arguments: '--set env=${{ parameters.environment }}'
+              kubernetesServiceEndpoint: 'myapp-default'
+              chartName: nodeapp
+              releaseName: 'nodeapp-${{ parameters.environment }}'
+              imagePullSecret: ${{imagePullSecret}}
+              tags: |
+                $(tag)
+
+
+
