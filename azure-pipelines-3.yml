@@ -46,22 +46,31 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
-- stage: Unit test
+- stage: Unittest
   displayName: Unit test
-  script: echo unit test
-- stage: code scan
+  jobs:
+  - job:
+    steps:
+    - script: echo unit test
+- stage: codescan
   displayName: code scan
-  script: echo code scan
+  jobs:
+  - job:
+    steps:
+    - script: echo code scan
 - stage: security 
   displayName: security
-  script: echo security
+  jobs:
+  - job:
+    steps:
+    - script: echo security
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: 'nodeapp.default'
+    environment: 'achauhanpipelinesjavascriptdocker.default'
     strategy:
       runOnce:
         deploy:
@@ -70,18 +79,14 @@ stages:
             inputs:
               azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
               azureResourceGroupForACR: 'myapp-rg'
-              azureContainerRegistry: ${{containerRegistry}}
-              command: install
+              azureContainerRegistry: $(containerRegistry)
+              command: upgrade
               chartPath: nodeapp
               kubernetesCluster: myapp
-              displayName: 'Deploy'
-              arguments: '--set env=${{ parameters.environment }}'
+              arguments: '--set env=${{ parameters.environment }},imagePullSecrets=[{$(imagePullSecrets)}]'
               kubernetesServiceEndpoint: 'myapp-default'
               chartName: nodeapp
               releaseName: 'nodeapp-${{ parameters.environment }}'
-              imagePullSecret: ${{imagePullSecret}}
-              tags: |
-                $(tag)
 
 
 
