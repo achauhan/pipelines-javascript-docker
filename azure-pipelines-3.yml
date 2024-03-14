@@ -66,7 +66,7 @@ stages:
               command: upgrade
               chartPath: $(imageRepository)
               kubernetesCluster: myapp
-              arguments: "--set image.repository=$(containerRegistry)/$(imageRepository),tag=$(tag)"
+              arguments: "--set image.repository=$(containerRegistry)/$(imageRepository),image.tag=$(tag)"
               kubernetesServiceEndpoint: 'myapp-default'
               chartName: $(imageRepository)
               releaseName: '$(imageRepository)-${{ parameters.environment }}'
