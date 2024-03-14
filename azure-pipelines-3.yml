@@ -81,12 +81,18 @@ stages:
               azureResourceGroupForACR: 'myapp-rg'
               azureContainerRegistry: $(containerRegistry)
               command: upgrade
-              chartPath: nodeapp
+              chartPath: $(imageRepository)
               kubernetesCluster: myapp
               arguments: '--set env=${{ parameters.environment }},imagePullSecrets=[{$(imagePullSecrets)}]'
               kubernetesServiceEndpoint: 'myapp-default'
-              chartName: nodeapp
-              releaseName: 'nodeapp-${{ parameters.environment }}'
+              chartName: $(imageRepository)
+              releaseName: '$(imageRepository)-${{ parameters.environment }}'
+              overrideValues: |
+                imagePullSecrets: 
+                  - name: $(imagePullSecrets)
+                image:
+                  repository: $(containerRegistry)/$(imageRepository)
+                  tag: $(tag)
 
 
 
