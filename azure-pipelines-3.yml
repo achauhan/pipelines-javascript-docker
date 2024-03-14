@@ -47,11 +47,6 @@ stages:
         tags: |
           $(tag)
 
-    - upload: nodeapp
-      artifact: nodeapp
-
-    - publish: nodeapp
-      artifact: nodeapp
 
 - stage: Deploy
   displayName: Deploy stage
