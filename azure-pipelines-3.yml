@@ -83,7 +83,7 @@ stages:
               command: upgrade
               chartPath: $(imageRepository)
               kubernetesCluster: myapp
-              arguments: '--set env=${{ parameters.environment }},imagePullSecrets=[{$(imagePullSecrets)}]'
+              arguments: '--set env=${{ parameters.environment }}'
               kubernetesServiceEndpoint: 'myapp-default'
               chartName: $(imageRepository)
               releaseName: '$(imageRepository)-${{ parameters.environment }}'
