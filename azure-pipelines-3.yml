@@ -57,27 +57,18 @@ stages:
   displayName: Deploy stage
   dependsOn: Build
   jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    environment: 'achauhanpipelinesjavascriptdocker.default'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - script: |
-              pwd
-              ls -l ../a ../b ../s
-          - task: HelmDeploy@0
-            inputs:
-              azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
-              azureResourceGroupForACR: 'myapp-rg'
-              azureContainerRegistry: $(containerRegistry)
-              command: upgrade
-              chartPath: $(Build.SourcesDirectory)/$(imageRepository)
-              kubernetesCluster: myapp
-              arguments: "--set image.tag=$(tag)"
-              kubernetesServiceEndpoint: 'myapp-default'
-              chartName: $(imageRepository)
-              releaseName: '$(imageRepository)-${{ parameters.environment }}'
+  - job:
+    steps:
+    - task: HelmDeploy@0
+      inputs:
+        azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
+        azureResourceGroupForACR: 'myapp-rg'
+        azureContainerRegistry: $(containerRegistry)
+        command: upgrade
+        kubernetesCluster: myapp
+        arguments: "--set image.tag=$(tag)"
+        kubernetesServiceEndpoint: 'myapp-default'
+        chartName: $(imageRepository)
+        releaseName: '$(imageRepository)-${{ parameters.environment }}'
 
 
