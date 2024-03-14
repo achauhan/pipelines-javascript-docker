@@ -58,6 +58,9 @@ stages:
       runOnce:
         deploy:
           steps:
+          - script: |
+              pwd
+              ls -l
           - task: HelmDeploy@0
             inputs:
               azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
