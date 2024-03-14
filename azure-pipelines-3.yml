@@ -47,6 +47,12 @@ stages:
         tags: |
           $(tag)
 
+    - upload: nodeapp
+      artifact: nodeapp
+
+    - publish: nodeapp
+      artifact: nodeapp
+
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
@@ -60,14 +66,14 @@ stages:
           steps:
           - script: |
               pwd
-              ls -l ..
+              ls -l ../a ../b ../s
           - task: HelmDeploy@0
             inputs:
               azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
               azureResourceGroupForACR: 'myapp-rg'
               azureContainerRegistry: $(containerRegistry)
               command: upgrade
-              chartPath: $(imageRepository)
+              chartPath: $(Build.SourcesDirectory)/$(imageRepository)
               kubernetesCluster: myapp
               arguments: "--set image.tag=$(tag)"
               kubernetesServiceEndpoint: 'myapp-default'
