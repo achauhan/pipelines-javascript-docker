@@ -37,6 +37,8 @@ stages:
   - job: Build
     displayName: Build
     steps:
+    - script: |
+        echo $tag) > app/version.txt
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
