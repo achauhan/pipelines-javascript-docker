@@ -61,7 +61,7 @@ stages:
         azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
         azureResourceGroupForACR: 'myapp-rg'
         azureContainerRegistry: $(containerRegistry)
-        command: upgrade
+        command: rollback
         kubernetesCluster: myapp
         arguments: "--set image.tag=$(tag)"
         kubernetesServiceEndpoint: 'myapp-default'
