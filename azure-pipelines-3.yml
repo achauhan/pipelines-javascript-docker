@@ -46,53 +46,24 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
-- stage: Unittest
-  displayName: Unit test
-  jobs:
-  - job:
-    steps:
-    - script: echo unit test
-- stage: codescan
-  displayName: code scan
-  jobs:
-  - job:
-    steps:
-    - script: echo code scan
-- stage: security 
-  displayName: security
-  jobs:
-  - job:
-    steps:
-    - script: echo security
+
+
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
   jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    environment: 'achauhanpipelinesjavascriptdocker.default'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: HelmDeploy@0
-            inputs:
-              azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
-              azureResourceGroupForACR: 'myapp-rg'
-              azureContainerRegistry: $(containerRegistry)
-              command: upgrade
-              chartPath: $(imageRepository)
-              kubernetesCluster: myapp
-              arguments: '--set env=${{ parameters.environment }},imagePullSecrets=[{$(imagePullSecrets)}]'
-              kubernetesServiceEndpoint: 'myapp-default'
-              chartName: $(imageRepository)
-              releaseName: '$(imageRepository)-${{ parameters.environment }}'
-              overrideValues: |
-                imagePullSecrets: 
-                  - name: $(imagePullSecrets)
-                image:
-                  repository: $(containerRegistry)/$(imageRepository)
-                  tag: $(tag)
-
+  - job:
+    steps:
+    - task: HelmDeploy@0
+      inputs:
+        azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
+        azureResourceGroupForACR: 'myapp-rg'
+        azureContainerRegistry: $(containerRegistry)
+        command: upgrade
+        kubernetesCluster: myapp
+        arguments: "--set image.tag=$(tag)"
+        kubernetesServiceEndpoint: 'myapp-default'
+        chartName: $(imageRepository)
+        releaseName: '$(imageRepository)-${{ parameters.environment }}'
 
 
