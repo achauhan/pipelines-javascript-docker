@@ -73,4 +73,5 @@ stages:
               kubernetesServiceEndpoint: myapp-default
               chartName: $(imageRepository)
               chartPath: $(imageRepository)
+              chartType: Name
               releaseName: '$(imageRepository)-${{ parameters.environment }}'
