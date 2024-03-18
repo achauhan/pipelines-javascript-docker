@@ -68,8 +68,8 @@ stages:
               azureResourceGroupForACR: 'myapp-rg'
               azureContainerRegistry: $(containerRegistry)
               command: upgrade
-              kubernetesCluster: myapp
+              kubernetesCluster: $(AKSClusterName)
               arguments: "--set image.tag=$(tag)"
-              # kubernetesServiceEndpoint: 'myapp-default'
+              kubernetesServiceEndpoint: myapp-default
               chartName: $(imageRepository)
               releaseName: '$(imageRepository)-${{ parameters.environment }}'
