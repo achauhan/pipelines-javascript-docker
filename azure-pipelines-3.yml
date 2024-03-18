@@ -72,6 +72,4 @@ stages:
               arguments: "--set image.tag=$(tag)"
               kubernetesServiceEndpoint: myapp-default
               chartName: $(imageRepository)
-              chartPath: $(imageRepository)
-              chartType: Name
               releaseName: '$(imageRepository)-${{ parameters.environment }}'
