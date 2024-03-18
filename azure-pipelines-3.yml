@@ -70,6 +70,6 @@ stages:
               command: upgrade
               kubernetesCluster: myapp
               arguments: "--set image.tag=$(tag)"
-              kubernetesServiceEndpoint: 'myapp-default'
+              # kubernetesServiceEndpoint: 'myapp-default'
               chartName: $(imageRepository)
               releaseName: '$(imageRepository)-${{ parameters.environment }}'
