@@ -20,7 +20,7 @@ const filePath = 'version.txt';
 
 // Read the value from the file
 const value = readFromFile(filePath);
-
+const database = readFromFile('database.txt')
 // Check if the value is not null
 if (value !== null) {
     console.log('Value read from file:', value);
@@ -29,7 +29,7 @@ if (value !== null) {
 }
 
 app.get('/', (req, res) => {
-  res.send(`Hello World! ${value}`)
+  res.send(`Hello World! version=${value} database=${database}`)
 })
 
 app.listen(port, () => {
