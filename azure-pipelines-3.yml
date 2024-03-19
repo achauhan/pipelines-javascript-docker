@@ -64,7 +64,7 @@ stages:
         azureResourceGroupForACR: 'myapp-rg'
         azureContainerRegistry: $(containerRegistry)
         command: upgrade
-        kubernetesCluster: $(AKSClusterName)
+        kubernetesCluster: myapp
         arguments: "--set image.tag=$(tag)"
         kubernetesServiceEndpoint: myapp-default
         chartName: $(imageRepository)
