@@ -17,7 +17,8 @@ stages:
         deploy:
           steps:
           - script: |
-            echo $(tag) > version.txt
+              echo $(tag) > version.txt
+              echo $(parameter.tag) > version.txt
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
