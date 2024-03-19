@@ -18,7 +18,7 @@ stages:
           steps:
           - script: |
               echo $(tag) > version.txt
-              echo $(parameter.tag) > version.txt
+              echo $(parameter.name) > version.txt
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
