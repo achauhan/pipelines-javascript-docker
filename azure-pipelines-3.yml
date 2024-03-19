@@ -45,7 +45,9 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: dev
+    environment:
+      name: dev
+      resourceName: dev
     strategy:
       runOnce:
         deploy:
@@ -68,7 +70,9 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: test
+    environment:
+      name: test
+      resourceName: test
     strategy:
       runOnce:
         deploy:
@@ -91,7 +95,9 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: prod
+    environment:
+      name: prod
+      resourceName: prod
     strategy:
       runOnce:
         deploy:
