@@ -5,31 +5,20 @@
 # trigger:
 # - main
 
-resources:
-- repo: self
+# resources:
+# - repo: self
 
 pool:
   vmImage: ubuntu-latest
 
-parameters:
-- name: environment
-  displayName: 'Environment'
-  type: string
-  default: 'dev'
-  values:
-  - dev
-  - test
-  - prod
-
 variables:
-  # azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
+  # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'b86c0918-8584-464e-84c3-eba6b2a1aad4'
-  imageRepository: 'nodeapp'
+  imageRepository: 'achauhanpipelinesjavascriptdocker'
   containerRegistry: 'acacr.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'acacrf011-auth'
-  group: $(parameters.environment)
 
 stages:
 - stage: Build
@@ -38,9 +27,6 @@ stages:
   - job: Build
     displayName: Build
     steps:
-    - script: |
-        echo $(tag) > app/version.txt
-        echo $(database) > app/database.txt
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
@@ -53,16 +39,59 @@ stages:
     - upload: manifests
       artifact: manifests
 
-- stage: Deploy
+- stage: Dev
   displayName: Deploy stage
   dependsOn: Build
-
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: 
-      name: ${{parameters.environment}}
-      resourceName: ${{parameters.environment}}
+    environment: dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
+- stage: Test
+  displayName: Deploy stage
+  dependsOn: Dev
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: test
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
+- stage: Prod
+  displayName: Deploy stage
+  dependsOn: Test
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: prod
     strategy:
       runOnce:
         deploy:
