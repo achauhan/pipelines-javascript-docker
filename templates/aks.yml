@@ -15,10 +15,6 @@ stages:
     strategy:
       runOnce:
         deploy:
-          steps:
-          - script: |
-              echo $(tag) > app/version.txt
-              echo $(parameter.name) > app/database.txt
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
