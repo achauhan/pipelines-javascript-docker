@@ -22,7 +22,7 @@ parameters:
   - prod
 
 variables:
-  # Container registry service connection established during pipeline creation
+  # azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
   dockerRegistryServiceConnection: 'b86c0918-8584-464e-84c3-eba6b2a1aad4'
   imageRepository: 'nodeapp'
   containerRegistry: 'acacr.azurecr.io'
@@ -55,17 +55,26 @@ stages:
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
+
   jobs:
-  - job: 
-    steps:
-    - task: HelmDeploy@0
-      inputs:
-        azureSubscriptionForACR: 'e4c5f7b5-9505-45e8-965f-7824ddc79fdc'
-        azureResourceGroupForACR: 'myapp-rg'
-        azureContainerRegistry: $(containerRegistry)
-        command: upgrade
-        kubernetesCluster: myapp
-        arguments: "--set image.tag=$(tag)"
-        kubernetesServiceEndpoint: myapp-default
-        chartName: $(imageRepository)
-        releaseName: '$(imageRepository)-${{ parameters.environment }}'
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 
+      name: ${{parameters.environment}}
+      resourceName: ${{parameters.environment}}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
