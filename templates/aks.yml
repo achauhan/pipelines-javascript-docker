@@ -1,5 +1,6 @@
 parameters:
 - name: name
+  type: string
 
 stages:
 - stage: ${{parameters.name}}
