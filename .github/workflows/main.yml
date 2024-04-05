@@ -22,14 +22,8 @@ jobs:
       - name: Install dependencies and build
         run: |
           docker build -t nodeapp app
-
-      # This step checks if the build is successful and triggers the merge action
-      - name: Merge to release branch on success
-        if: ${{ github.event_name == 'pull_request' && success() }}
-        uses: pullreminders/merge-action@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          method: 'squash'
-          commit_message: 'Merge pull request #${{ github.event.pull_request.number }}'
-          merge_method: 'merge' # Adjust if you prefer a different merge method
-          merge_to: 'release' # Name of your release branch
+          if [ $? -eq 0 ]; then
+            echo "::set-output name=build-success::true"
+          else
+            echo "::set-output name=build-success::false"
+          fi
