@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-adding a syntax error here
+adding a syntax error here to test
 FROM node:12.18.1
 ENV NODE_ENV=production
 
